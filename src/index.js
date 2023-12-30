@@ -1,21 +1,34 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import ErrorBoundary from "./util/error-boundary";
-import { RouterProvider, createBrowseRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { mainRoute } from './components/async-router/components/main';
+import { booksRoute } from './components/async-router/components/books';
+// import Club from './components/async-router/components/club';
+import Nav from './components/async-router/components/nav';
+import delay from './components/async-router/util/delay';
+
+const Club = lazy( () => delay( import( './components/async-router/components/club' ), 1000 ) );
 const root = ReactDOM.createRoot( document.getElementById( 'root' ) );
 
-// const router = createBrowseRouter( [
-//     {
-//         element: <Nav />
-//     }
-// ] )
+const router = createBrowserRouter( [
+    {
+        element: <Nav />,
+        children: [
+            { index: true, ...mainRoute },
+            { path: '/books', ...booksRoute },
+            { path: '/club', element: <Club /> },
+        ]
+    }
+] )
 root.render(
     <React.StrictMode>
         <ErrorBoundary fallback={"Error at App Level"}>
-            <App />
+            {/* <App /> */}
+            <RouterProvider router={router}></RouterProvider>
         </ErrorBoundary>
     </React.StrictMode>
 );
